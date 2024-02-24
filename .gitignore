@@ -38,3 +38,4 @@ flaskr.db
 .idea/**/markdown-navigator/
 
 # PyCharm
+.idea/*
