@@ -6,12 +6,38 @@
       <dd><input type="text" size="30" name="title">
       <dt>Text:
       <dd><textarea name="text" rows="5" cols="40"></textarea>
+      <dt>Category:
+      <dd><input type="text" size="30" name="category">
       <dd><input type="submit" value="Share">
     </dl>
   </form>
+
+  {% if categories is defined %}
+    <h1>Filter Entries By Category:</h1>
+    <form action="{{ url_for('filter_entry') }}" method="get" class="filter-entry">
+    <select id="filter" name="filter">
+      <option selected value="">Show All Entries!</option>
+      {% for category in categories %}
+        <option value="{{ category[0] }}">{{ category[0] }}</option>
+    {% endfor %}
+    </select>
+    <input type="submit" value="Filter">
+    </form>
+  {% else %}
+    <h1>Filtered Results</h1>
+    <a href="{{ url_for('show_entries') }}">Back</a>
+  {% endif %}
+
   <ul class="entries">
   {% for entry in entries %}
-    <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}</li>
+      <li>
+        <h2>{{ entry.title }}</h2>
+          <p>{{ entry.text|safe }}<br>Category: {{ entry.category|safe }}</p>
+          <form action="{{ url_for('delete_entry') }}" method="post">
+            <input type="hidden" name="delete" value="{{ entry.title }} {{ entry.text }} {{ entry.category }}">
+            <input type="submit" value="Delete Entry">
+          </form>
+      </li>
   {% else %}
     <li><em>Unbelievable.  No entries here so far</em></li>
   {% endfor %}
