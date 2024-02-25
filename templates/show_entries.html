@@ -30,7 +30,14 @@
 
   <ul class="entries">
   {% for entry in entries %}
-      <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}<br>Category: {{ entry.category|safe }}</li>
+      <li>
+        <h2>{{ entry.title }}</h2>
+          <p>{{ entry.text|safe }}<br>Category: {{ entry.category|safe }}</p>
+          <form action="{{ url_for('delete_entry') }}" method="post">
+            <input type="hidden" name="delete" value="{{ entry.title }} {{ entry.text }} {{ entry.category }}">
+            <input type="submit" value="Delete Entry">
+          </form>
+      </li>
   {% else %}
     <li><em>Unbelievable.  No entries here so far</em></li>
   {% endfor %}

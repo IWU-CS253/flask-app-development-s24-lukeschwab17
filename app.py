@@ -87,8 +87,22 @@ def add_entry():
 
 @app.route('/filter', methods=['GET'])
 def filter_entry():
+    if request.args['filter'] == "":
+        return redirect(url_for('show_entries'))
     db = get_db()
     cur = db.execute('SELECT title, text, category FROM entries WHERE category = ? ORDER BY id DESC',
                      (request.args['filter'],))
     filtered_entries = cur.fetchall()
     return render_template('show_entries.html', entries=filtered_entries)
+
+@app.route('/delete', methods=['POST'])
+def delete_entry():
+    entry = request.form['delete'].split()
+    db = get_db()
+    print(entry)
+    cur = db.execute('DELETE FROM entries WHERE title = ? AND text = ? AND category = ?',
+                     (entry[0], entry[1], entry[2]))
+    db.commit()
+    # user returns to same page, whether they were on filtered page or default entry page
+    # https://stackoverflow.com/questions/41270855/flask-redirect-to-same-page-after-form-submission
+    return redirect(request.referrer)
