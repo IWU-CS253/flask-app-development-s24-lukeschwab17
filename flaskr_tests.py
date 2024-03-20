@@ -50,6 +50,56 @@ class FlaskrTestCase(unittest.TestCase):
 
         assert b'No entries here so far' in rv.data
 
+    def test_edit(self):
+        # create post
+        rv = self.app.post('/add', data=dict(
+            title='Test title',
+            text='Test text',
+            category='A category'
+        ), follow_redirects=True)
+
+        # move to edit page
+        rv = self.app.post('/edit', data=dict(
+            edit='1'
+        ), follow_redirects=True)
+
+        # edit post
+        rv = self.app.post('/edit-success', data=dict(
+            title='New title',
+            text='New text',
+            category='New category',
+            id='1'
+        ), follow_redirects=True)
+
+        assert b'Test title' not in rv.data
+        assert b'Test text' not in rv.data
+        assert b'Test category' not in rv.data
+
+        assert b'New title' in rv.data
+        assert b'New text' in rv.data
+        assert b'New category' in rv.data
+    def test_edit_cancel(self):
+        # create post
+        rv = self.app.post('/add', data=dict(
+            title='Test title',
+            text='Test text',
+            category='A category',
+            id='1'
+        ), follow_redirects=True)
+
+        # move to edit page
+        rv = self.app.post('/edit', data=dict(
+            edit='1'
+        ), follow_redirects=True)
+
+
+        # cancel edit
+        rv = self.app.get('/')
+        print(rv.data)
+        assert b'Test title' in rv.data
+        assert b'Test text' in rv.data
+        assert b'A category' in rv.data
+
     def test_filter_entry(self):
         # add post
         rv = self.app.post('/add', data=dict(
