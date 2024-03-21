@@ -93,6 +93,7 @@ def filter_entry():
     cur = db.execute('SELECT * FROM entries WHERE category = ? ORDER BY id DESC',
                      (request.args['filter'],))
     filtered_entries = cur.fetchall()
+    flash(f'Entries successfully filtered by category: {request.args['filter']}')
     return render_template('show_entries.html', entries=filtered_entries)
 
 @app.route('/delete', methods=['POST'])
