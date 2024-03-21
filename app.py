@@ -93,16 +93,42 @@ def filter_entry():
     cur = db.execute('SELECT * FROM entries WHERE category = ? ORDER BY id DESC',
                      (request.args['filter'],))
     filtered_entries = cur.fetchall()
+    flash(f"Entries successfully filtered by category: {request.args['filter']}")
     return render_template('show_entries.html', entries=filtered_entries)
 
 @app.route('/delete', methods=['POST'])
 def delete_entry():
     entry = int(request.form['delete'])
+
     db = get_db()
-    print(entry)
     cur = db.execute('DELETE FROM entries WHERE id = ?',
                      (entry,))
     db.commit()
+
+    flash('Entry successfully deleted')
     # user returns to same page, whether they were on filtered page or default entry page
     # https://stackoverflow.com/questions/41270855/flask-redirect-to-same-page-after-form-submission
     return redirect(request.referrer)
+
+@app.route('/edit', methods=['POST'])
+def edit_entry():
+    entry = int(request.form['edit'])
+    db = get_db()
+
+    db = get_db()
+    cur = db.execute('SELECT * FROM entries WHERE id = ?', (entry,))
+    entry = cur.fetchone()
+
+    return render_template('entry_editor.html', entry=entry)
+
+@app.route('/edit-success', methods=['POST'])
+def edit():
+    db = get_db()
+    db.execute('UPDATE entries SET title = ?, text = ?, category = ? WHERE id = ?',
+               (request.form['title'], request.form['text'], request.form['category'], request.form['id']))
+    db.commit()
+    flash('Entry was successfully edited')
+    return redirect(url_for('show_entries'))
+
+if __name__ == '__main__':
+    app.run(debug=True)
