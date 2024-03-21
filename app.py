@@ -103,6 +103,8 @@ def delete_entry():
     cur = db.execute('DELETE FROM entries WHERE id = ?',
                      (entry,))
     db.commit()
+
+    flash('Entry successfully deleted')
     # user returns to same page, whether they were on filtered page or default entry page
     # https://stackoverflow.com/questions/41270855/flask-redirect-to-same-page-after-form-submission
     return redirect(request.referrer)
